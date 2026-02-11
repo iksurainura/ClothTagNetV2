@@ -8,3 +8,5 @@ ipykernel
 easyocr
 streamlit
 easyocr
+streamlit-webrtc
+av
