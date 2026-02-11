@@ -6,3 +6,5 @@ matplotlib
 ultralytics
 ipykernel
 easyocr
+streamlit
+easyocr
