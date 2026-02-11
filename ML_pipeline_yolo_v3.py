@@ -22,10 +22,6 @@ class Config:
     # Model settings
     SEG_CONF = 0.7
 
-
-# ==========================================
-# MAIN APPLICATION
-# ==========================================
 class DefectInspectionSystem:
     def __init__(self):
         self.config = Config()

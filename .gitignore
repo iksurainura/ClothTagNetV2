@@ -1,2 +1,4 @@
 /.env
-/env
+env
+yolo11m-cls.pt
+yolo11m-obb.pt

@@ -63,9 +63,8 @@ while True:
             # WINDOW FINISHED: Process the best frame
             if frame_buffer:
                 sharpest = max(frame_buffer, key=lambda x: x['score']) 
-                contours, _ = cv2.findContours(sharpest['mask'], cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-                
+                contours, _ = cv2.findContours(sharpest['mask'], cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) 
+                 
                 if contours:
                     cnt = max(contours, key=cv2.contourArea)
                     rect = cv2.minAreaRect(cnt)
