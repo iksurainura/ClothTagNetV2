@@ -1,4 +1,4 @@
 /.env
 env
-yolo11m-cls.pt
-yolo11m-obb.pt
+yolo11n-obb.pt
+yolo11m-seg.pt
