@@ -5,6 +5,9 @@ from datetime import datetime,timedelta
 import threading
 import queue
 import cv2
+import easyocr
+from datetime import datetime
+import time
 
 
 class DefectDetectionOCR:
@@ -49,4 +52,41 @@ class DefectDetectionOCR:
         if not frames_with_masks:
             return None,None,0
         sharpest_frame = max(self.frame_buffer, key=lambda x: x['sharpness'])
-        
+        return sharpest_frame
+    
+    #this funtion contain the text extraction from the images
+    def extract_text(image_path):
+        start_time = time.time()
+        reader=easyocr.Reader(['en'],gpu=True)
+        text_list=reader.readtext(image_path,detail=0)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        paragraph = " ".join(text_list)
+        paragraph = paragraph.lower()
+        print(f"\nTime consumed: {elapsed_time:.2f} seconds")
+        return paragraph
+    
+    def process_sharpest_frame(self,frame,mask):
+        print("Print the sharpest frame through OCR and OBB models")
+        if mask is not None:
+            x,y,w,h=cv2.boundingReact(mask)
+            roi=frame[y:y+h,x:x+w]
+        else:
+            roi =frame
+        ocr_result=self.process_with_ocr(roi)
+        obb_result=self.process_with_obb(roi)
+
+        result={
+            'frame':frame,
+            'roi':roi,
+            'mask':mask,
+            'ocr_result':ocr_result,
+            'obb_results':obb_result,
+            'timestamp':datetime.now()
+        }
+    
+    def check_detection(self,seg_results):
+        if hasattr(seg_results,'masks') and seg_results.masks is not None:
+            mask=seg_results.mask[0].data.cpu().numpy().astype(np.uint8)*255
+            return mask
+        return None
