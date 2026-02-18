@@ -10,3 +10,4 @@ streamlit
 easyocr
 streamlit-webrtc
 av
+certifi
