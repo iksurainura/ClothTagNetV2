@@ -10,7 +10,7 @@ from DefectInspection import DefectInspection, SystemConfig, InspectionResult
 
 # ==================== MODEL CONFIGURATION ====================
 # Set your model path here
-MODEL_PATH = "YOLO11m-seg.pt"  # Change this to your model path
+MODEL_PATH = "models/YOLO11m-seg.pt"  # Change this to your model path
 # =============================================================
 
 # Page configuration
