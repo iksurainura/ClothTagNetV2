@@ -27,18 +27,113 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-def _load_css(path: str = "style.css") -> None:
-    import os
-    # Always resolve relative to this script's directory
-    css_path = os.path.join(os.path.dirname(__file__), path)
-    if not os.path.exists(css_path):
-        st.error(f"CSS file not found: {css_path}")
-        return
-    with open(css_path, "r") as f:
-        css = f.read()
-    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+st.markdown("""
+<style>
+    /* ── remove default top padding so nothing hides under header ── */
+    .block-container { padding-top: 0.5rem !important; padding-bottom: 1rem; }
+    header[data-testid="stHeader"] { display: none; }          /* hide top bar */
+    #MainMenu, footer { visibility: hidden; }
 
-_load_css()
+    /* ── global ── */
+    .stApp { background: #0d1117; color: #e0e0e0; }
+    section[data-testid="stSidebar"] {
+        background: #161b22;
+        border-right: 1px solid #21262d;
+    }
+
+    /* ── logo bar (used in HTML) ── */
+    .logo-bar {
+        font-size: 26px; font-weight: 700; color: #58a6ff;
+        padding: 14px 0 4px; border-bottom: 1px solid #21262d;
+        margin-bottom: 16px;
+    }
+
+    /* ── status pills (used in HTML) ── */
+    .status-pill {
+        display: inline-block; padding: 6px 16px; border-radius: 20px;
+        font-size: 12px; font-weight: 600; letter-spacing: .4px;
+        border: 1px solid;
+    }
+    .pill-idle { background: #161b22; color: #8b949e; border-color: #30363d; }
+    .pill-detect { background: #2a2200; color: #d29922; border-color: #d29922; }
+    .pill-capture { background: #2d1b1b; color: #ff6b35; border-color: #ff6b35; }
+    .pill-process { background: #0d1f33; color: #58a6ff; border-color: #58a6ff; }
+    .pill-done { background: #0d2a1a; color: #3fb950; border-color: #3fb950; }
+
+    /* ── section header (used in HTML) ── */
+    .section-header {
+        font-size: 13px; font-weight: 600; color: #8b949e;
+        text-transform: uppercase; letter-spacing: 1px;
+        border-bottom: 1px solid #21262d;
+        padding-bottom: 5px; margin: 14px 0 10px;
+    }
+
+    /* ── metric card (used in HTML) ── */
+    .metric-card {
+        background: #161b22; border: 1px solid #21262d;
+        border-radius: 10px; padding: 16px 18px; text-align: center;
+    }
+    .metric-label {
+        font-size: 11px; color: #8b949e;
+        text-transform: uppercase; letter-spacing: 1px;
+    }
+    .metric-val { 
+        font-size: 28px; font-weight: 700; 
+        margin-top: 4px; 
+    }
+
+    /* ── pipeline dots (used in HTML) ── */
+    .pipe-row {
+        display: flex; align-items: center; margin-bottom: 8px;
+    }
+    .pipe-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: #30363d; margin-right: 12px;
+        flex-shrink: 0;
+    }
+    .pipe-dot-active { background: #d29922; box-shadow: 0 0 8px #d29922; }
+    .pipe-dot-capture { background: #ff6b35; box-shadow: 0 0 8px #ff6b35; }
+    .pipe-dot-process { background: #58a6ff; box-shadow: 0 0 8px #58a6ff; }
+
+    /* ── result card (used in HTML) ── */
+    .result-card {
+        background: #161b22; border: 1px solid #21262d;
+        border-radius: 10px; padding: 16px; margin-bottom: 14px;
+    }
+    .result-ocr {
+        background: #0d1117; border-left: 3px solid #58a6ff;
+        border-radius: 0 6px 6px 0; padding: 10px 12px;
+        font-family: monospace; font-size: 13px; color: #e0e0e0;
+        word-break: break-all; min-height: 40px;
+        margin: 8px 0;
+    }
+
+    /* ── gate log box (defined in CSS but not used in HTML, keeping for compatibility) ── */
+    .gate-log {
+        background: #0d1117; border: 1px solid #21262d; border-radius: 8px;
+        padding: 10px 12px; font-family: monospace; font-size: 11px;
+        color: #8b949e; height: 220px; overflow-y: auto;
+    }
+
+    /* ── badge classes (defined in CSS but not used in HTML, keeping for compatibility) ── */
+    .badge {
+        display: inline-block; padding: 3px 12px; border-radius: 20px;
+        font-size: 12px; font-weight: 600; letter-spacing: .4px;
+    }
+    .badge-green  { background:#0d2a1a; color:#3fb950; border:1px solid #3fb950; }
+    .badge-yellow { background:#2a2200; color:#d29922; border:1px solid #d29922; }
+    .badge-blue   { background:#0d1f33; color:#58a6ff; border:1px solid #58a6ff; }
+    .badge-red    { background:#2a0d0d; color:#f85149; border:1px solid #f85149; }
+
+    /* ── pipeline step labels (defined in CSS but not used in HTML, keeping for compatibility) ── */
+    .pipe-step {
+        display: inline-block; background: #21262d;
+        border-radius: 4px; padding: 2px 8px;
+        font-size: 11px; color: #8b949e; margin-right: 4px;
+    }
+    .pipe-arrow { color: #3fb950; font-weight: 700; margin-right: 4px; }
+</style>
+""", unsafe_allow_html=True)
 
 # ──────────────────────────────────────────────────────────────────────────────
 #  TUNABLE CONSTANTS  (mirrors backend)
@@ -486,10 +581,6 @@ with right:
 
     # ── Pipeline status ────────────────────────────────────────────────────
     st.markdown('<div class="section-header">PIPELINE</div>', unsafe_allow_html=True)
-
-    def pipe_dot(active_stages, active_class="pipe-dot-active"):
-        cls = active_class if stage in active_stages else "pipe-dot"
-        return f'<div class="pipe-dot {cls}"></div>'
 
     steps = [
         (["detecting","capturing","processing","done"], "pipe-dot-active",  "SEG Model",       "Running on every frame"),
