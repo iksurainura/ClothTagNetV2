@@ -15,7 +15,7 @@ def load_models():
 seg_model, obb_model = load_models()
 
 def run_inspection():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     is_bursting = False
     burst_timer = 0
     # The 'Winner' container for our collection
